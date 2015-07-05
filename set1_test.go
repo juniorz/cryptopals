@@ -1,6 +1,7 @@
 package cryptopals_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/juniorz/cryptopals"
@@ -29,7 +30,19 @@ func (*Set1Suite) TestFixedXOR(c *C) {
 }
 
 func (*Set1Suite) TestBreakSingleByteXOR(c *C) {
-	plain := cryptopals.BreakSingleByteXORCipher("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+	cipher := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+	plain, _ := cryptopals.BreakSingleByteXORCipher(cipher)
 	exp := "Cooking MC's like a pound of bacon"
 	c.Assert(plain, Equals, exp)
+}
+
+func (*Set1Suite) TestDetectSingleByteXOR(c *C) {
+	filename := "data/4.txt"
+	f, _ := os.Open(filename)
+	defer f.Close()
+
+	exp := "Now that the party is jumping\n"
+	detected := cryptopals.DetectSingleByteXOR(f)
+
+	c.Assert(detected, Equals, exp)
 }
