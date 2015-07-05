@@ -1,6 +1,7 @@
 package cryptopals_test
 
 import (
+	"encoding/hex"
 	"os"
 	"testing"
 
@@ -21,12 +22,21 @@ func (*Set1Suite) TestConvertHexToBase64(c *C) {
 	c.Assert(exp, Equals, cryptopals.HexToBase64(src))
 }
 
-func (*Set1Suite) TestFixedXOR(c *C) {
-	a := "1c0111001f010100061a024b53535009181c"
-	b := "686974207468652062756c6c277320657965"
-	exp := "746865206b696420646f6e277420706c6179"
+func decodeHex(in string) []byte {
+	out, err := hex.DecodeString(in)
+	if err != nil {
+		panic(err)
+	}
 
-	c.Assert(exp, Equals, cryptopals.FixedXOR(a, b))
+	return out
+}
+
+func (*Set1Suite) TestFixedXOR(c *C) {
+	a := decodeHex("1c0111001f010100061a024b53535009181c")
+	b := decodeHex("686974207468652062756c6c277320657965")
+	exp := decodeHex("746865206b696420646f6e277420706c6179")
+
+	c.Assert(exp, DeepEquals, cryptopals.FixedXOR(a, b))
 }
 
 func (*Set1Suite) TestBreakSingleByteXOR(c *C) {

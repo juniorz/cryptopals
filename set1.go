@@ -15,20 +15,17 @@ func HexToBase64(h string) string {
 }
 
 // FixedXOR solves challenge 2
-func FixedXOR(a, b string) string {
-	ba, _ := hex.DecodeString(a)
-	bb, _ := hex.DecodeString(b)
-
-	if len(ba) != len(bb) {
+func FixedXOR(a, b []byte) []byte {
+	if len(a) != len(b) {
 		panic("a and b have different sizes")
 	}
 
-	ret := make([]byte, len(ba))
+	ret := make([]byte, len(a))
 	for i := range ret {
-		ret[i] = ba[i] ^ bb[i]
+		ret[i] = a[i] ^ b[i]
 	}
 
-	return hex.EncodeToString(ret)
+	return ret
 }
 
 // BreakSingleByteXORCipher solves challenge 3
