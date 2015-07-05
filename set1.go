@@ -29,22 +29,22 @@ func FixedXOR(a, b []byte) []byte {
 }
 
 // BreakSingleByteXORCipher solves challenge 3
-func BreakSingleByteXORCipher(in string) (string, uint) {
+func BreakSingleByteXORCipher(in []byte) ([]byte, uint) {
 	var candidate singleByteXORCandidate
-	key := make([]byte, len(in)/2)
+	key := make([]byte, len(in))
 	for c := 0x00; c <= 0xff; c++ {
 		for i := range key {
 			key[i] = byte(c)
 		}
 
-		p, _ := hex.DecodeString(FixedXOR(in, hex.EncodeToString(key)))
+		p := FixedXOR(in, key)
 
 		if s := score(p); s > candidate.score {
 			candidate = singleByteXORCandidate{p, s}
 		}
 	}
 
-	return string(candidate.key), candidate.score
+	return candidate.key, candidate.score
 }
 
 type singleByteXORCandidate struct {
