@@ -75,8 +75,8 @@ func (*Set1Suite) TestDetectSingleByteXOR(c *C) {
 	f, _ := os.Open(filename)
 	defer f.Close()
 
-	exp := "Now that the party is jumping\n"
+	exp := []byte("Now that the party is jumping\n")
 	detected := cryptopals.DetectSingleByteXOR(f)
 
-	c.Assert(detected, Equals, exp)
+	c.Assert(detected, DeepEquals, exp)
 }

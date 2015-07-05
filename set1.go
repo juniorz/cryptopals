@@ -89,14 +89,14 @@ func NewBase64Decoder(r io.Reader) *bufio.Scanner {
 }
 
 // DetectSingleByteXOR solves challenge 4
-func DetectSingleByteXOR(r io.Reader) string {
+func DetectSingleByteXOR(r io.Reader) []byte {
 	var bestScore uint
-	var ret string
+	var ret []byte
 
-	s := bufio.NewScanner(r)
+	s := NewBase64Decoder(r)
 
 	for s.Scan() {
-		k, s := BreakSingleByteXORCipher(s.Text())
+		k, s := BreakSingleByteXORCipher(s.Bytes())
 
 		if s > bestScore {
 			bestScore = s
