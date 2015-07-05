@@ -1,6 +1,7 @@
 package cryptopals_test
 
 import (
+	"bytes"
 	"encoding/hex"
 	"os"
 	"testing"
@@ -14,6 +15,29 @@ func Test(t *testing.T) { TestingT(t) }
 type Set1Suite struct{}
 
 var _ = Suite(&Set1Suite{})
+
+func (*Set1Suite) TestBase64Scanner(c *C) {
+	in := []byte(`0e3647e8592d35514a081243582536ed3de6734059001e3f535ce6271032
+334b041de124f73c18011a50e608097ac308ecee501337ec3e100854201d`)
+	s := cryptopals.NewBase64Decoder(bytes.NewBuffer(in))
+
+	c.Assert(true, Equals, s.Scan())
+	c.Assert(s.Bytes(), DeepEquals, []byte{
+		0xe, 0x36, 0x47, 0xe8, 0x59, 0x2d, 0x35, 0x51, 0x4a, 0x8,
+		0x12, 0x43, 0x58, 0x25, 0x36, 0xed, 0x3d, 0xe6, 0x73, 0x40,
+		0x59, 0x0, 0x1e, 0x3f, 0x53, 0x5c, 0xe6, 0x27, 0x10, 0x32,
+	})
+
+	c.Assert(true, Equals, s.Scan())
+	c.Assert(s.Bytes(), DeepEquals, []byte{
+		0x33, 0x4b, 0x4, 0x1d, 0xe1, 0x24, 0xf7, 0x3c, 0x18, 0x1,
+		0x1a, 0x50, 0xe6, 0x8, 0x9, 0x7a, 0xc3, 0x8, 0xec, 0xee,
+		0x50, 0x13, 0x37, 0xec, 0x3e, 0x10, 0x8, 0x54, 0x20, 0x1d,
+	})
+
+	c.Assert(s.Scan(), Equals, false)
+	c.Assert(s.Err(), Equals, nil)
+}
 
 func (*Set1Suite) TestConvertHexToBase64(c *C) {
 	src := "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
