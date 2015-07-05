@@ -73,7 +73,7 @@ func score(in []byte) (s uint) {
 	return
 }
 
-func NewBase64Decoder(r io.Reader) *bufio.Scanner {
+func NewHexEncodingScanner(r io.Reader) *bufio.Scanner {
 	s := bufio.NewScanner(r)
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		advance, token, err = bufio.ScanLines(data, atEOF)
@@ -93,7 +93,7 @@ func DetectSingleByteXOR(r io.Reader) []byte {
 	var bestScore uint
 	var ret []byte
 
-	s := NewBase64Decoder(r)
+	s := NewHexEncodingScanner(r)
 
 	for s.Scan() {
 		k, s := BreakSingleByteXORCipher(s.Bytes())

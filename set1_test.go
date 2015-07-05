@@ -16,10 +16,10 @@ type Set1Suite struct{}
 
 var _ = Suite(&Set1Suite{})
 
-func (*Set1Suite) TestBase64Scanner(c *C) {
+func (*Set1Suite) TestHexEncodingScanner(c *C) {
 	in := []byte(`0e3647e8592d35514a081243582536ed3de6734059001e3f535ce6271032
 334b041de124f73c18011a50e608097ac308ecee501337ec3e100854201d`)
-	s := cryptopals.NewBase64Decoder(bytes.NewBuffer(in))
+	s := cryptopals.NewHexEncodingScanner(bytes.NewBuffer(in))
 
 	c.Assert(true, Equals, s.Scan())
 	c.Assert(s.Bytes(), DeepEquals, []byte{
