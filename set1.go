@@ -106,3 +106,19 @@ func DetectSingleByteXOR(r io.Reader) []byte {
 
 	return ret
 }
+
+// RepeatingKeyXOR solves challenge 5
+func RepeatingKeyXOR(key, plain []byte) string {
+	k := make([]byte, len(plain))
+	repeatKey([]byte(key), k[:])
+	ret := FixedXOR(plain, k)
+
+	return hex.EncodeToString([]byte(ret))
+}
+
+func repeatKey(key, rep []byte) {
+	p := 0
+	for len(rep[p:]) > 0 {
+		p += copy(rep[p:], []byte(key))
+	}
+}
