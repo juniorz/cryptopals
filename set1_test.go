@@ -2,7 +2,9 @@ package cryptopals_test
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/hex"
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -90,4 +92,20 @@ I go crazy when I hear a cymbal`)
 
 	cipher := cryptopals.RepeatingKeyXOR(key, plain)
 	c.Assert(cipher, DeepEquals, exp)
+}
+
+func (*Set1Suite) TestHammingDistance(c *C) {
+	a := []byte("this is a test")
+	b := []byte("wokka wokka!!!")
+
+	c.Assert(cryptopals.HammingDistance(a, b), Equals, 37)
+}
+
+func (*Set1Suite) TestBreakRepeatingKeyXOR(c *C) {
+	filename := "data/6.txt"
+	file, _ := ioutil.ReadFile(filename)
+	cipher, _ := base64.StdEncoding.DecodeString(string(file))
+
+	key := cryptopals.BreakRepeatingKeyXOR(cipher)
+	c.Assert(string(key), DeepEquals, "Terminator X: Bring the noise")
 }

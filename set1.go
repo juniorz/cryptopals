@@ -131,3 +131,95 @@ func repeatKey(key, rep []byte) {
 		p += copy(rep[p:], []byte(key))
 	}
 }
+
+func HammingDistance(a, b []byte) int {
+	if len(a) != len(b) {
+		panic("a and b have different sizes")
+	}
+
+	n := 0
+	for i := range a {
+		for j := uint(0); j < 8; j++ {
+			if byte(a[i]>>j&1) != byte(b[i]>>j&1) {
+				n++
+			}
+		}
+	}
+
+	return n
+}
+
+func repeatingKeySize(cipher []byte, s int) []int {
+	norm := 1000
+	candidates := make([][]int, s)
+	for i := range candidates {
+		candidates[i] = []int{0, norm}
+	}
+
+	for k := 2; k <= 40; k++ {
+		sa := cipher[:k]
+		sb := cipher[k : 2*k]
+		sc := cipher[2*k : 3*k]
+		sd := cipher[3*k : 4*k]
+		d1 := HammingDistance(sa, sb)
+		d2 := HammingDistance(sb, sc)
+		d3 := HammingDistance(sc, sd)
+		d := 100 * (d1 + d2 + d3) / 3
+		n := d / k
+
+		i := s
+		for ; i > 0 && candidates[i-1][1] > n; i-- {
+		}
+
+		if i == s {
+			continue
+		}
+
+		copy(candidates[i+1:], candidates[i:])
+		candidates[i] = []int{k, n}
+	}
+
+	keysize := make([]int, s)
+	for i, c := range candidates {
+		keysize[i] = c[0]
+	}
+
+	return keysize
+}
+
+func transposeBlocks(src []byte, n int) [][]byte {
+	ret := make([][]byte, n)
+	for i := range ret {
+		ret[i] = make([]byte, 0, len(src)/n)
+	}
+
+	for i, b := range src {
+		ret[i%n] = append(ret[i%n], b)
+	}
+
+	return ret
+}
+
+//BreakRepeatingKeyXOR solves challenge 6
+func BreakRepeatingKeyXOR(cipher []byte) []byte {
+	var ret []byte
+	candidates := repeatingKeySize(cipher, 5)
+	bestScore := uint(0)
+
+	for _, length := range candidates {
+		key := make([]byte, 0, length)
+		score := uint(0)
+
+		for _, block := range transposeBlocks(cipher, length) {
+			k, s := keyForSingleByteXorCipher(block)
+			key = append(key, k)
+			score += s
+		}
+
+		if score > bestScore {
+			bestScore, ret = score, key
+		}
+	}
+
+	return ret
+}
