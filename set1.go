@@ -29,30 +29,39 @@ func FixedXOR(a, b []byte) []byte {
 }
 
 // BreakSingleByteXORCipher solves challenge 3
-func BreakSingleByteXORCipher(in []byte) ([]byte, uint) {
-	var candidate singleByteXORCandidate
-	key := make([]byte, len(in))
-	for c := 0x00; c <= 0xff; c++ {
-		for i := range key {
-			key[i] = byte(c)
+func BreakSingleByteXORCipher(cipher []byte) []byte {
+	key, _ := keyForSingleByteXorCipher(cipher)
+	return byteXOR(key, cipher)
+}
+
+func keyForSingleByteXorCipher(cipher []byte) (key byte, score uint) {
+	plain := make([]byte, len(cipher))
+
+	for k := 0x00; k <= 0xff; k++ {
+		for i := range cipher {
+			plain[i] = cipher[i] ^ byte(k)
 		}
 
-		p := FixedXOR(in, key)
-
-		if s := score(p); s > candidate.score {
-			candidate = singleByteXORCandidate{p, s}
+		if s := frequencyScore(plain); s > score {
+			key = byte(k)
+			score = s
 		}
 	}
 
-	return candidate.key, candidate.score
+	return
 }
 
-type singleByteXORCandidate struct {
-	key   []byte
-	score uint
+func byteXOR(k byte, src []byte) []byte {
+	dest := make([]byte, len(src))
+
+	for i := range src {
+		dest[i] = src[i] ^ k
+	}
+
+	return dest
 }
 
-func score(in []byte) (s uint) {
+func frequencyScore(in []byte) (s uint) {
 	for _, c := range in {
 		switch c {
 		case 'E', 'T', 'A', 'O', 'I', 'N', ' ', 'S', 'H', 'R', 'D', 'L', 'U':

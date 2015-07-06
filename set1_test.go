@@ -65,7 +65,7 @@ func (*Set1Suite) TestFixedXOR(c *C) {
 
 func (*Set1Suite) TestBreakSingleByteXOR(c *C) {
 	cipher := decodeHex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
-	plain, _ := cryptopals.BreakSingleByteXORCipher(cipher)
+	plain := cryptopals.BreakSingleByteXORCipher(cipher)
 	exp := []byte("Cooking MC's like a pound of bacon")
 	c.Assert(plain, DeepEquals, exp)
 }
