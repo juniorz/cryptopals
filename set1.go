@@ -100,30 +100,29 @@ func NewHexEncodingScanner(r io.Reader) *bufio.Scanner {
 
 // DetectSingleByteXOR solves challenge 4
 func DetectSingleByteXOR(r io.Reader) []byte {
-	var bestScore uint
-	var ret []byte
+	var score uint
+	var plain []byte
 
 	s := NewHexEncodingScanner(r)
 
 	for s.Scan() {
-		k, s := BreakSingleByteXORCipher(s.Bytes())
+		cipher := s.Bytes()
+		k, s := keyForSingleByteXorCipher(cipher)
 
-		if s > bestScore {
-			bestScore = s
-			ret = k
+		if s > score {
+			score = s
+			plain = byteXOR(k, cipher)
 		}
 	}
 
-	return ret
+	return plain
 }
 
 // RepeatingKeyXOR solves challenge 5
-func RepeatingKeyXOR(key, plain []byte) string {
+func RepeatingKeyXOR(key, plain []byte) []byte {
 	k := make([]byte, len(plain))
 	repeatKey([]byte(key), k[:])
-	ret := FixedXOR(plain, k)
-
-	return hex.EncodeToString([]byte(ret))
+	return FixedXOR(plain, k)
 }
 
 func repeatKey(key, rep []byte) {
