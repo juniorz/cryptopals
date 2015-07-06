@@ -64,16 +64,17 @@ func byteXOR(k byte, src []byte) []byte {
 func frequencyScore(in []byte) (s uint) {
 	for _, c := range in {
 		switch c {
-		case 'E', 'T', 'A', 'O', 'I', 'N', ' ', 'S', 'H', 'R', 'D', 'L', 'U':
+		case ' ':
+			s += 3
+		case 'E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'U':
+			s += 3
 		case 'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'u':
-			s += 7
+			s += 3
 		default:
 			switch {
-			case (c >= '0' && c <= '9'):
-				s += 3
 			case (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'):
-				s += 5
-			case c >= ' ' && c <= '~':
+				s += 2
+			case (c >= '0' && c <= '9'):
 				s++
 			}
 		}
