@@ -30,17 +30,13 @@ func FixedXOR(a, b []byte) []byte {
 
 // BreakSingleByteXORCipher solves challenge 3
 func BreakSingleByteXORCipher(cipher []byte) []byte {
-	key, _ := keyForSingleByteXorCipher(cipher)
+	key, _ := BreakSingleByteXORKey(cipher)
 	return byteXOR(key, cipher)
 }
 
-func keyForSingleByteXorCipher(cipher []byte) (key byte, score uint) {
-	plain := make([]byte, len(cipher))
-
+func BreakSingleByteXORKey(cipher []byte) (key byte, score uint) {
 	for k := 0x00; k <= 0xff; k++ {
-		for i := range cipher {
-			plain[i] = cipher[i] ^ byte(k)
-		}
+		plain := byteXOR(byte(k), cipher)
 
 		if s := frequencyScore(plain); s > score {
 			key = byte(k)
@@ -107,7 +103,7 @@ func DetectSingleByteXOR(r io.Reader) []byte {
 
 	for s.Scan() {
 		cipher := s.Bytes()
-		k, s := keyForSingleByteXorCipher(cipher)
+		k, s := BreakSingleByteXORKey(cipher)
 
 		if s > score {
 			score = s
@@ -211,7 +207,7 @@ func BreakRepeatingKeyXOR(cipher []byte) []byte {
 		score := uint(0)
 
 		for _, block := range transposeBlocks(cipher, length) {
-			k, s := keyForSingleByteXorCipher(block)
+			k, s := BreakSingleByteXORKey(block)
 			key = append(key, k)
 			score += s
 		}
