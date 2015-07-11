@@ -5,6 +5,9 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"io"
+
+	"github.com/twstrike/AwESome/aes"
+	"github.com/twstrike/AwESome/block"
 )
 
 // HexToBase64 solves challenge 1
@@ -218,4 +221,9 @@ func BreakRepeatingKeyXOR(cipher []byte) []byte {
 	}
 
 	return ret
+}
+
+func DecryptAEC_128_ECB(key, cipher []byte) []byte {
+	ecb := block.ECB{}
+	return ecb.Decrypt(key, cipher, aes.BlockCipher)
 }

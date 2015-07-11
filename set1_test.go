@@ -101,11 +101,30 @@ func (*Set1Suite) TestHammingDistance(c *C) {
 	c.Assert(cryptopals.HammingDistance(a, b), Equals, 37)
 }
 
-func (*Set1Suite) TestBreakRepeatingKeyXOR(c *C) {
-	filename := "data/6.txt"
-	file, _ := ioutil.ReadFile(filename)
-	cipher, _ := base64.StdEncoding.DecodeString(string(file))
+func readFile(filename string) []byte {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
 
+	decoded, err := base64.StdEncoding.DecodeString(string(content))
+	if err != nil {
+		panic(err)
+	}
+
+	return decoded
+}
+
+func (*Set1Suite) TestBreakRepeatingKeyXOR(c *C) {
+	cipher := readFile("data/6.txt")
 	key := cryptopals.BreakRepeatingKeyXOR(cipher)
 	c.Assert(string(key), DeepEquals, "Terminator X: Bring the noise")
+}
+
+func (*Set1Suite) TestDecryptAES_128_ECB(c *C) {
+	exp := "I'm back and I'm ringin' the bell"
+	cipher := readFile("data/7.txt")
+	key := []byte("YELLOW SUBMARINE")
+	plain := cryptopals.DecryptAEC_128_ECB(key, cipher)
+	c.Assert(exp, DeepEquals, string(plain[:len(exp)]))
 }
